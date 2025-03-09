@@ -1,0 +1,17 @@
+.game {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.game__title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.game__reset {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}

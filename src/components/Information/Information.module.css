@@ -1,0 +1,8 @@
+.information {
+  margin-bottom: 20px;
+}
+
+.information__status {
+  font-size: 1.5rem;
+  font-weight: bold;
+}

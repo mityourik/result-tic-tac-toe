@@ -1,0 +1,19 @@
+.field {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-gap: 5px;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.field__cell {
+  width: 100px;
+  height: 100px;
+  font-size: 2rem;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.field__cell__winner {
+  border: 2px solid red;
+}
