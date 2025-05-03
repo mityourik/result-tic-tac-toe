@@ -1,20 +1,77 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import FieldLayout from './FieldLayout';
+import React, { useEffect, useState } from 'react';
+import { ACTIONS, WIN_PATTERNS } from '../../constants';
+import { store } from '../../store';
 import styles from './Field.module.css';
+import FieldLayout from './FieldLayout';
 
-function Field({ field, onCellClick, winningCells }) {
+function Field() {
+    const [, forceUpdate] = useState({});
+    const state = store.getState();
+
+    useEffect(() => {
+        const unsubscribe = store.subscribe(() => {
+            forceUpdate({});
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const handleCellClick = (index) => {
+        if (state.field[index] !== '' || state.isGameEnded) return;
+
+        const newField = [...state.field];
+        newField[index] = state.currentPlayer;
+
+        const winningCombination = WIN_PATTERNS.find((pattern) =>
+            pattern.every((i) => newField[i] === state.currentPlayer)
+        );
+
+        if (winningCombination) {
+            store.dispatch({
+                type: ACTIONS.SET_FIELD,
+                payload: {
+                    field: newField,
+                    currentPlayer: state.currentPlayer,
+                },
+            });
+            store.dispatch({
+                type: ACTIONS.SET_WINNER,
+                payload: winningCombination,
+            });
+            return;
+        }
+
+        if (!newField.includes('')) {
+            store.dispatch({
+                type: ACTIONS.SET_FIELD,
+                payload: {
+                    field: newField,
+                    currentPlayer: state.currentPlayer,
+                },
+            });
+            store.dispatch({ type: ACTIONS.SET_DRAW });
+            return;
+        }
+
+        store.dispatch({
+            type: ACTIONS.SET_FIELD,
+            payload: {
+                field: newField,
+                currentPlayer: state.currentPlayer === 'X' ? '0' : 'X',
+            },
+        });
+    };
+
     return (
         <FieldLayout>
-            {field.map((cell, index) => (
+            {state.field.map((cell, index) => (
                 <button
                     key={index}
                     className={`${styles['field__cell']} ${
-                        winningCells.includes(index)
+                        state.winningCells.includes(index)
                             ? styles['field__cell__winner']
                             : ''
-                    }`}
-                    onClick={() => onCellClick(index)}
+                    } ${state.isGameEnded ? styles['game-ended'] : ''}`}
+                    onClick={() => handleCellClick(index)}
                 >
                     {cell}
                 </button>
@@ -22,11 +79,5 @@ function Field({ field, onCellClick, winningCells }) {
         </FieldLayout>
     );
 }
-
-Field.propTypes = {
-    field: PropTypes.arrayOf(PropTypes.string).isRequired,
-    onCellClick: PropTypes.func.isRequired,
-    winningCells: PropTypes.arrayOf(PropTypes.number).isRequired,
-};
 
 export default Field;
