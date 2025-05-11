@@ -1,19 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { store } from '../../store';
+import React from 'react';
 import styles from './Information.module.css';
 import InformationLayout from './InformationLayout';
 
-function Information() {
-    const [, forceUpdate] = useState({});
-    const { currentPlayer, isGameEnded, isDraw } = store.getState();
-
-    useEffect(() => {
-        const unsubscribe = store.subscribe(() => {
-            forceUpdate({});
-        });
-        return () => unsubscribe();
-    }, []);
-
+function Information({ currentPlayer, isGameEnded, isDraw }) {
     const getStatus = () => {
         if (isDraw) return 'Ничья!';
         if (isGameEnded) return `Победил ${currentPlayer}!`;

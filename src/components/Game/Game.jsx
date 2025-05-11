@@ -7,11 +7,11 @@ import styles from './Game.module.css';
 import GameLayout from './GameLayout';
 
 function Game() {
-    const [, forceUpdate] = useState({});
+    const [gameState, setGameState] = useState(store.getState());
 
     useEffect(() => {
         const unsubscribe = store.subscribe(() => {
-            forceUpdate({});
+            setGameState(store.getState());
         });
         return () => unsubscribe();
     }, []);
@@ -22,8 +22,17 @@ function Game() {
 
     return (
         <GameLayout>
-            <Information />
-            <Field />
+            <Information
+                currentPlayer={gameState.currentPlayer}
+                isGameEnded={gameState.isGameEnded}
+                isDraw={gameState.isDraw}
+            />
+            <Field
+                field={gameState.field}
+                currentPlayer={gameState.currentPlayer}
+                isGameEnded={gameState.isGameEnded}
+                winningCells={gameState.winningCells}
+            />
             <button className={styles['game__reset']} onClick={resetGame}>
                 Начать заново
             </button>

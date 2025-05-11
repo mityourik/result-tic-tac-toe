@@ -1,28 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ACTIONS, WIN_PATTERNS } from '../../constants';
 import { store } from '../../store';
 import styles from './Field.module.css';
 import FieldLayout from './FieldLayout';
 
-function Field() {
-    const [, forceUpdate] = useState({});
-    const state = store.getState();
-
-    useEffect(() => {
-        const unsubscribe = store.subscribe(() => {
-            forceUpdate({});
-        });
-        return () => unsubscribe();
-    }, []);
-
+function Field({ field, currentPlayer, isGameEnded, winningCells }) {
     const handleCellClick = (index) => {
-        if (state.field[index] !== '' || state.isGameEnded) return;
+        if (field[index] !== '' || isGameEnded) return;
 
-        const newField = [...state.field];
-        newField[index] = state.currentPlayer;
+        const newField = [...field];
+        newField[index] = currentPlayer;
 
         const winningCombination = WIN_PATTERNS.find((pattern) =>
-            pattern.every((i) => newField[i] === state.currentPlayer)
+            pattern.every((i) => newField[i] === currentPlayer)
         );
 
         if (winningCombination) {
@@ -30,7 +20,7 @@ function Field() {
                 type: ACTIONS.SET_FIELD,
                 payload: {
                     field: newField,
-                    currentPlayer: state.currentPlayer,
+                    currentPlayer: currentPlayer,
                 },
             });
             store.dispatch({
@@ -45,7 +35,7 @@ function Field() {
                 type: ACTIONS.SET_FIELD,
                 payload: {
                     field: newField,
-                    currentPlayer: state.currentPlayer,
+                    currentPlayer: currentPlayer,
                 },
             });
             store.dispatch({ type: ACTIONS.SET_DRAW });
@@ -56,21 +46,21 @@ function Field() {
             type: ACTIONS.SET_FIELD,
             payload: {
                 field: newField,
-                currentPlayer: state.currentPlayer === 'X' ? '0' : 'X',
+                currentPlayer: currentPlayer === 'X' ? '0' : 'X',
             },
         });
     };
 
     return (
         <FieldLayout>
-            {state.field.map((cell, index) => (
+            {field.map((cell, index) => (
                 <button
                     key={index}
                     className={`${styles['field__cell']} ${
-                        state.winningCells.includes(index)
+                        winningCells.includes(index)
                             ? styles['field__cell__winner']
                             : ''
-                    } ${state.isGameEnded ? styles['game-ended'] : ''}`}
+                    } ${isGameEnded ? styles['game-ended'] : ''}`}
                     onClick={() => handleCellClick(index)}
                 >
                     {cell}
