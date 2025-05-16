@@ -1,10 +1,12 @@
-import React from 'react';
-import { ACTIONS, WIN_PATTERNS } from '../../constants';
-import { store } from '../../store';
+import { useDispatch } from 'react-redux';
+import { setDraw, setField, setWinner } from '../../actions/gameActions';
+import { WIN_PATTERNS } from '../../constants';
 import styles from './Field.module.css';
 import FieldLayout from './FieldLayout';
 
 function Field({ field, currentPlayer, isGameEnded, winningCells }) {
+    const dispatch = useDispatch();
+
     const handleCellClick = (index) => {
         if (field[index] !== '' || isGameEnded) return;
 
@@ -16,39 +18,18 @@ function Field({ field, currentPlayer, isGameEnded, winningCells }) {
         );
 
         if (winningCombination) {
-            store.dispatch({
-                type: ACTIONS.SET_FIELD,
-                payload: {
-                    field: newField,
-                    currentPlayer: currentPlayer,
-                },
-            });
-            store.dispatch({
-                type: ACTIONS.SET_WINNER,
-                payload: winningCombination,
-            });
+            dispatch(setField(newField, currentPlayer));
+            dispatch(setWinner(winningCombination));
             return;
         }
 
         if (!newField.includes('')) {
-            store.dispatch({
-                type: ACTIONS.SET_FIELD,
-                payload: {
-                    field: newField,
-                    currentPlayer: currentPlayer,
-                },
-            });
-            store.dispatch({ type: ACTIONS.SET_DRAW });
+            dispatch(setField(newField, currentPlayer));
+            dispatch(setDraw());
             return;
         }
 
-        store.dispatch({
-            type: ACTIONS.SET_FIELD,
-            payload: {
-                field: newField,
-                currentPlayer: currentPlayer === 'X' ? '0' : 'X',
-            },
-        });
+        dispatch(setField(newField, currentPlayer === 'X' ? '0' : 'X'));
     };
 
     return (
@@ -56,11 +37,11 @@ function Field({ field, currentPlayer, isGameEnded, winningCells }) {
             {field.map((cell, index) => (
                 <button
                     key={index}
-                    className={`${styles['field__cell']} ${
-                        winningCells.includes(index)
-                            ? styles['field__cell__winner']
+                    className={`${styles.field__cell} ${
+                        winningCells?.includes(index)
+                            ? styles.field__cell__winner
                             : ''
-                    } ${isGameEnded ? styles['game-ended'] : ''}`}
+                    }`}
                     onClick={() => handleCellClick(index)}
                 >
                     {cell}

@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { ACTIONS } from '../../constants';
-import { store } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { restartGame } from '../../actions/gameActions';
 import Field from '../Field/Field';
 import Information from '../Information/Information';
 import styles from './Game.module.css';
 import GameLayout from './GameLayout';
 
 function Game() {
-    const [gameState, setGameState] = useState(store.getState());
+    const gameState = useSelector((state) => state);
+    const dispatch = useDispatch();
 
-    useEffect(() => {
-        const unsubscribe = store.subscribe(() => {
-            setGameState(store.getState());
-        });
-        return () => unsubscribe();
-    }, []);
-
-    const resetGame = () => {
-        store.dispatch({ type: ACTIONS.RESTART_GAME });
+    const handleResetGame = () => {
+        dispatch(restartGame());
     };
 
     return (
@@ -33,7 +26,7 @@ function Game() {
                 isGameEnded={gameState.isGameEnded}
                 winningCells={gameState.winningCells}
             />
-            <button className={styles['game__reset']} onClick={resetGame}>
+            <button className={styles['game__reset']} onClick={handleResetGame}>
                 Начать заново
             </button>
         </GameLayout>
