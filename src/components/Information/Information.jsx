@@ -1,8 +1,12 @@
-import React from 'react';
+import { useSelector } from 'react-redux';
 import styles from './Information.module.css';
 import InformationLayout from './InformationLayout';
 
-function Information({ currentPlayer, isGameEnded, isDraw }) {
+function Information() {
+    const { currentPlayer, isGameEnded, isDraw } = useSelector(
+        (state) => state
+    );
+
     const getStatus = () => {
         if (isDraw) return 'Ничья!';
         if (isGameEnded) return `Победил ${currentPlayer}!`;

@@ -1,10 +1,13 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setDraw, setField, setWinner } from '../../actions/gameActions';
 import { WIN_PATTERNS } from '../../constants';
 import styles from './Field.module.css';
 import FieldLayout from './FieldLayout';
 
-function Field({ field, currentPlayer, isGameEnded, winningCells }) {
+function Field() {
+    const { field, currentPlayer, isGameEnded, winningCells } = useSelector(
+        (state) => state
+    );
     const dispatch = useDispatch();
 
     const handleCellClick = (index) => {
